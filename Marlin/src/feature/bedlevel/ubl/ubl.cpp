@@ -260,7 +260,7 @@ bool unified_bed_leveling::sanity_check() {
   void GcodeSuite::M1004() {
 
     #define ALIGN_GCODE TERN(Z_STEPPER_AUTO_ALIGN, "G34\n", "")
-    #define PROBE_GCODE TERN(HAS_BED_PROBE, "G29P1\nG29P3", "G29P4R")
+    #define PROBE_GCODE TERN(HAS_BED_PROBE, "G29P1\nG29P3")
 
     #if HAS_HOTEND
       if (parser.seenval('H')) {                          // Handle H# parameter to set Hotend temp
@@ -277,7 +277,8 @@ bool unified_bed_leveling::sanity_check() {
         thermalManager.wait_for_bed(false);
       }
     #endif
-
+    thermalManager.setTargetBed(60);
+    thermalManager.wait_for_bed(true);
     process_subcommands_now(FPSTR(G28_STR));      // Home
     process_subcommands_now(F(ALIGN_GCODE         // Align multi z axis if available
                               PROBE_GCODE "\n"    // Build mesh with available hardware
